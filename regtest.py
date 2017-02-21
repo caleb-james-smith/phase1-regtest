@@ -16,17 +16,27 @@ def resetRBX(rbx):
            ]
     return send_commands(port, host, cmds, script=True, raw=False, time_out=20)
 
+def resetRBXs(rbxList):
+    cmds = []
+    for rbx in rbxList:
+        cmds += ["put HE%i-bkp_pwr_enable 1"%rbx,
+                 "put HE%i-bkp_reset 1"%rbx,
+                 "wait",
+                 "put HE%i-bkp_reset 0"%rbx
+                ]
+    return send_commands(port, host, cmds, script=True, raw=False, time_out=20)
+
 if __name__ == "__main__":
     #rbxes of of interest
-    rbxList = [12]
-    NIterations = 5
+    rbxList = [i for i in xrange(3,16)]
+    NIterations = 1
     #Run reset on the boxes of interest
     for rbx in rbxList:
         print "=========================="
         print "Reset RBX: %3i"%(rbx)
         print "=========================="
 
-        print resetRBX(rbx)
+        resetRBX(rbx)
 
     #Get commands
     for rbx in rbxList:
@@ -38,3 +48,5 @@ if __name__ == "__main__":
             results = send_commands(port, host, cmds, script=True, raw=False, time_out=20)
             formattedResults = "\n".join(["%-40s : %s"%(x["cmd"], x["result"]) for x in results])
             print formattedResults
+
+
